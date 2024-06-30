@@ -13,6 +13,7 @@ class Category(models.Model):
         indexes = [
             models.Index(fields=['name'])
         ]
+        verbose_name_plural = 'Categories'
 
     def get_absolute_url(self):
         return reverse('shop:product_list_by_category', args=[self.slug])
