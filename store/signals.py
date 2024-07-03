@@ -11,4 +11,4 @@ def new_price_default(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=Product)
 def calculate_new_price(sender, instance, **kwargs):
-    instance.new_price = (instance.off * instance.price) / 100
+    instance.new_price = instance.price - (instance.off * instance.price) / 100
