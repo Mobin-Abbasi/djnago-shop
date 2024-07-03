@@ -25,11 +25,15 @@
                     <h2><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
                 <img src="{{ product.images.first.file.url }}">
                 </div>
+                {% if product.off != 0 %}
                 <div class="price">
                     <del><span class="old-price">{{ product.price }} تومان</span></del>
                     <br>
                     <span class="new-price">{{ product.new_price }} تومان</span>
                 </div>
+                {% else %}
+                    <span class="new-price">{{ product.new_price }} تومان</span>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
