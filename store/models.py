@@ -22,10 +22,6 @@ class Category(models.Model):
         return self.name
 
 
-def get_absolute_url():
-    return reverse('shop:')
-
-
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=155)
@@ -33,6 +29,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=155)
     inventory = models.PositiveIntegerField(default=0)
     price = models.PositiveIntegerField(default=0)
+    weight = models.PositiveIntegerField(default=0)
     off = models.PositiveIntegerField(default=0)
     new_price = models.PositiveIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
