@@ -7,6 +7,15 @@ from django.http import JsonResponse
 
 # Create your views here.
 
+
+def cart_detail(request):
+    cart = Cart(request)
+    context = {
+        'cart':  cart
+    }
+    return render(request, 'cart/detail.html', context)
+
+
 @require_POST
 def add_to_cart(request, product_id):
     try:
