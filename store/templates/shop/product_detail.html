@@ -16,13 +16,15 @@
                     <li>{{ feature.name }}: {{ feature.value }}</li>
                 {% endfor %}
             </ul>
-            {% if product.new_price %}
+            {% if product.off != 0 %}
                 <del><p>قیمت: {{ product.price }}</p></del>
                 <p>قیمت پس از تخفیف: {{ product.new_price }}</p>
             {% else %}
                 <p>قیمت: {{ product.price }}</p>
             {% endif %}
         </div>
+        <br>
+        <button type="button" id="add-cart">افزودن به سبد خرید</button>
         <div class="product-image">
             {% for img in product.images.all %}
                 <img src="{{ img.file.url }}">
@@ -33,5 +35,24 @@
         <h3>توضیحات محصول</h3>
         <p>{{ product.description }}</p>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function(){
+            $('#add-cart').click(function(){
+               var button = $(this);
+
+               $.ajax({
+                  type: 'POST',
+                   url: '{% url 'cart:add_to_cart' product.id %}',
+                   data: {'csrfmoddlewaretoken': '{{ csrf_token }}'},
+                   success: function(data){
+                       $('#item_count').text(data.item_count);
+                       $('#total_price').text(data.total_price);
+                   },
+               });
+            });
+        });
+    </script>
 
 {% endblock %}
