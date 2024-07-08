@@ -29,3 +29,7 @@ def add_to_cart(request, product_id):
         return JsonResponse(context)
     except Exception as e:
         return JsonResponse({'error': e})
+
+
+def update_quantity(request):
+    pass
