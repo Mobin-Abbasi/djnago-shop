@@ -45,7 +45,7 @@
                $.ajax({
                   type: 'POST',
                    url: '{% url 'cart:add_to_cart' product.id %}',
-                   data: {'csrfmoddlewaretoken': '{{ csrf_token }}'},
+                   data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
                    success: function(data){
                        $('#item_count').text(data.item_count);
                        $('#total_price').text(data.total_price);
