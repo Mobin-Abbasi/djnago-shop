@@ -18,9 +18,9 @@
                         نام محصول: {{ item.product.name }}
                     </a>
                 </h3>
-                <p>تعداد: <span>{{ item.quantity }}</span></p>
+                <p>تعداد: <span id="item-quantity-{{ item.product.id }}">{{ item.quantity }}</span></p>
                 <p>قیمت هر محصول: <span>{{ item.price }}</span></p>
-                <p>قیمت کل: <span>{{ item.total }}</span></p>
+                <p>قیمت کل: <span id="item-total-{{ item.product.id }}">{{ item.total }}</span></p>
             </div>
             <div class="action">
                 <div class="quantity-add">
@@ -37,9 +37,9 @@
 
     {% endfor %}
     <div class="total-price">
-        <p>قیمت کل: <span>{{ cart.get_total_price }}</span> تومان</p>
-        <p>هزینه ارسال: <span>{{ cart.get_post_price }}</span>تومان</p>
-        <p>مبلغ کل: <span>{{ cart.get_final_price }}</span>تومان</p>
+        <p>قیمت کل: <span id="item-total_price">{{ cart.get_total_price }}</span> تومان</p>
+        <p>هزینه ارسال: <span id="item-post_price">{{ cart.get_post_price }}</span>تومان</p>
+        <p>مبلغ کل: <span id="item-final_price">{{ cart.get_final_price }}</span>تومان</p>
     </div>
     <div class="checkout-buttons">
         <div class="continue-btn"><a href="#">ادامه خرید</a></div>
@@ -69,7 +69,12 @@
                 },
                 success: function (response){
                     if (response.success){
-
+                        $('#item_count').text(response.item_count);
+                        $('#total_price').text(response.total_price);
+                        $('#item-quantity-' + itemID).text(response.quantity);
+                        $('#item-total-' +  itemID).text(response.total);
+                        $('item-total_price').text(response.total_price);
+                        $('item-final_price').text(response.final_price);
                     } else {
                         alert('Error Updating Quantity!!!');
                     }
