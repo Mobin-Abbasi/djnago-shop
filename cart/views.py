@@ -31,5 +31,6 @@ def add_to_cart(request, product_id):
         return JsonResponse({'error': e})
 
 
+@require_POST
 def update_quantity(request):
     pass

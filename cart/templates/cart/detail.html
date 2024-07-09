@@ -8,7 +8,7 @@
         <h1>سبد خرید</h1>
     </div>
     {% for item in cart %}
-        <div class="product-item">
+        <div class="product-item" data-item-id="{{ item.product.id }}">
             <a href="{% url 'shop:product_detail' item.product.id item.product.slug %}">
                 <img src="{{ item.product.images.first.file.url }}">
             </a>
@@ -47,4 +47,35 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(function(){
+        $('.quantity-add').on('click', function(){
+            updateQuantity($(this).closest('.product-item').data('item-id'), 'add');
+        });
+
+        $('.quantity-decrease').on('click', function(){
+            updateQuantity($(this).closest('.product-item').data('item-id'), 'decrease');
+        });
+
+        function updateQuantity(itemID, action){
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'cart:update_quantity' %}',
+                data: {
+                    'item_id': itemID,
+                    'action': action,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response){
+                    if (response.success){
+
+                    } else {
+                        alert('Error Updating Quantity!!!');
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
