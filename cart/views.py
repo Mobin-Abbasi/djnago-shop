@@ -38,6 +38,7 @@ def update_quantity(request):
     try:
         product = get_object_or_404(Product, id=item_id)
         cart = Cart(request)
+
         if action == 'add':
             cart.add(product)
         elif action == 'decrease':
@@ -49,6 +50,25 @@ def update_quantity(request):
             'success': True,
             'quantity': cart.cart[item_id]['quantity'],
             'total': cart.cart[item_id]['quantity'] * cart.cart[item_id]['price'],
+            'final_price': cart.get_final_price(),
+
+        }
+        return JsonResponse(context)
+    except:
+        return JsonResponse({'success': False, 'error': 'item not found'})
+
+
+def remove_item(request):
+    item_id = request.POST.get('item_id')
+    try:
+        product = get_object_or_404(Product, id=item_id)
+        cart = Cart(request)
+        cart.remove(product)
+
+        context = {
+            'item_count': len(cart),
+            'total_price': cart.get_total_price(),
+            'success': True,
             'final_price': cart.get_final_price(),
 
         }
