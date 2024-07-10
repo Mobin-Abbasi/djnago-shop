@@ -5,7 +5,8 @@ from store.models import Product
 # Create your models here.
 
 class Order(models.Model):
-    name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=75)
+    last_name = models.CharField(max_length=75)
     phone = models.CharField(max_length=11)
     address = models.CharField(max_length=255)
     postal_code = models.CharField(max_length=10)
