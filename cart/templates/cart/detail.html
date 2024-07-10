@@ -50,12 +50,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready(function(){
+
         $('.quantity-add').on('click', function(){
             updateQuantity($(this).closest('.product-item').data('item-id'), 'add');
         });
 
         $('.quantity-decrease').on('click', function(){
             updateQuantity($(this).closest('.product-item').data('item-id'), 'decrease');
+        });
+
+        $('.quantity-remove').on('click', function(){
+            removeItem($(this).closest('.product-item').data('item-id'));
         });
 
         function updateQuantity(itemID, action){
@@ -75,6 +80,28 @@
                         $('#item-total-' +  itemID).text(response.total);
                         $('item-total_price').text(response.total_price);
                         $('item-final_price').text(response.final_price);
+                    } else {
+                        alert('Error Updating Quantity!!!');
+                    }
+                }
+            });
+        }
+
+        function removeItem(itemID){
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'cart:remove_item' %}',
+                data: {
+                    'item_id': itemID,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response){
+                    if (response.success){
+                        $('#item_count').text(response.item_count);
+                        $('#total_price').text(response.total_price);
+                        $('#item-total_price').text(response.total_price);
+                        $('#item-final_price').text(response.final_price);
+                        $(`.product-item[data-item-id=${itemID}]`).remove();
                     } else {
                         alert('Error Updating Quantity!!!');
                     }
