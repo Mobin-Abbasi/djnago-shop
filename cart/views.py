@@ -58,6 +58,7 @@ def update_quantity(request):
         return JsonResponse({'success': False, 'error': 'item not found'})
 
 
+@require_POST
 def remove_item(request):
     item_id = request.POST.get('item_id')
     try:
