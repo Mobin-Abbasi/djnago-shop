@@ -27,3 +27,19 @@ class ShopUserManager(BaseUserManager):
 
         return self.create_users(phone, password, **extra_fields)
 
+
+class ShopUser(AbstractBaseUser, PermissionsMixin):
+    phone = models.CharField(max_length=11, unique=True)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    address = models.TextField()
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = ShopUserManager()
+
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.phone
