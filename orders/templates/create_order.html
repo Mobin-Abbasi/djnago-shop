@@ -1,0 +1,15 @@
+<h2>محصولات انتخاب شده</h2>
+<ul>
+    {% for item in cart %}
+        <li>
+        {{ item.quantity }} X {{ item.product.name }}
+        {{ item.total }}
+        </li>
+    {% endfor %}
+</ul>
+<h2>اطالاعات سفارش را تکمیل کنید</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">تایید سفارش</button>
+</form>

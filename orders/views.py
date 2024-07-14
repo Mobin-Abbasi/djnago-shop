@@ -46,6 +46,7 @@ def verify_code(request):
             if code == verification_code:
                 user = ShopUser.objects.create_users(phone=phone)
                 user.set_password('123456')
+                user.save()
                 send_sms_normal('phone', 'به نمیدونم کجا خوش امدید')
                 print(user)
                 login(request, user)
@@ -68,7 +69,8 @@ def create_order(request):
             for item in cart:
                 OrderItem.objects.create(order=order, product=item['product'], quantity=item['quantity'],
                                          price=item['price'], weight=item['weight'])
-                cart.clear()
+            cart.clear()
+            return redirect('shop:product_list')
     else:
         form = OrderCreateForm()
 
@@ -76,4 +78,4 @@ def create_order(request):
         'form': form,
         'cart': cart
     }
-    return render(request, 'order_create.html', context)
+    return render(request, 'create_order.html', context)
