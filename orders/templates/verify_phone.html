@@ -1,0 +1,6 @@
+<h2>تایید شماره تلفن</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">ارسال کد تایید</button>
+</form>
