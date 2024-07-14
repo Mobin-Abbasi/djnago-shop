@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
 import random
+from django.contrib.auth.decorators import login_required
 
-from .forms import PhoneVerificationForm
+from .forms import PhoneVerificationForm, OrderCreateForm
 from account.models import ShopUser
 from cart.common.KaveSms import send_sms_with_template, send_sms_normal
+from .models import OrderItem
+from cart.cart import Cart
 
 # Create your views here.
 
@@ -48,8 +51,29 @@ def verify_code(request):
                 login(request, user)
                 del request.session['verification_code']
                 del request.session['phone']
-
+                return redirect('orders:create_order')
             else:
                 messages.error(request, 'Verification code is incorrect')
 
     return render(request, 'verify_code.html')
+
+
+@login_required
+def create_order(request):
+    cart = Cart(request)
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            for item in cart:
+                OrderItem.objects.create(order=order, product=item['product'], quantity=item['quantity'],
+                                         price=item['price'], weight=item['weight'])
+                cart.clear()
+    else:
+        form = OrderCreateForm()
+
+    context = {
+        'form': form,
+        'cart': cart
+    }
+    return render(request, 'order_create.html', context)
