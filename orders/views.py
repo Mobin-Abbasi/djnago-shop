@@ -14,6 +14,8 @@ from cart.cart import Cart
 
 
 def verify_phone(request):
+    if request.user.is_authenticated:
+        return redirect('orders:create_order')
     if request.method == 'POST':
         form = PhoneVerificationForm(request.POST)
         if form.is_valid():
