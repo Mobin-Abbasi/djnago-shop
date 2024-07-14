@@ -1,4 +1,9 @@
 <h2>تایید شماره تلفن</h2>
+{% for message in messages %}
+    <div>
+        {{ message }}
+    </div>
+{% endfor %}
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
