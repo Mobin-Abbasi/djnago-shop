@@ -1,0 +1,6 @@
+<h2>بررسی کد تایید</h2>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="code", placeholder="کد تایید را وارد کنید">
+    <button type="submit">ارسال کد</button>
+</form>
