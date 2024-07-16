@@ -168,3 +168,11 @@ def verify(request):
         return HttpResponse('Timeout Error')
     except requests.exceptions.ConnectionError:
         return HttpResponse('Connection Error')
+
+
+def orders_list(request):
+    pass
+
+
+def order_detail(request, id):
+    pass
