@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.contrib import messages
@@ -177,4 +177,5 @@ def orders_list(request):
 
 
 def order_detail(request, id):
-    pass
+    order = get_object_or_404(Order, id=id)
+    return render(request, 'order_detail.html', {'order': order})
