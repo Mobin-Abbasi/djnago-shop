@@ -171,7 +171,9 @@ def verify(request):
 
 
 def orders_list(request):
-    pass
+    user = request.user
+    orders = Order.objects.filter(buyer=user)
+    return render(request, 'orders_list.html', {'orders': orders})
 
 
 def order_detail(request, id):
