@@ -1,17 +1,17 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import login
-import random
 from django.contrib.auth.decorators import login_required
-import json
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.http import HttpResponse
+from django.contrib import messages
 from django.conf import settings
 import requests
-from django.http import HttpResponse
+import random
+import json
 
-from .forms import PhoneVerificationForm, OrderCreateForm
-from account.models import ShopUser
 from cart.common.KaveSms import send_sms_with_template, send_sms_normal
-from .models import OrderItem
+from .forms import PhoneVerificationForm, OrderCreateForm
+from .models import OrderItem, Order
+from account.models import ShopUser
 from cart.cart import Cart
 
 # Create your views here.
@@ -77,6 +77,8 @@ def create_order(request):
             for item in cart:
                 OrderItem.objects.create(order=order, product=item['product'], quantity=item['quantity'],
                                          price=item['price'], weight=item['weight'])
+            cart.clear()
+            request.session['order_id'] = order.id
             return redirect('orders:request')
     else:
         form = OrderCreateForm()
@@ -100,17 +102,17 @@ ZP_API_VERIFY = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentVerifica
 ZP_API_STARTPAY = f"https://{sandbox}.zarinpal.com/pg/StartPay/"
 
 # Important: need to edit for real server.
-CallbackURL = 'http://127.0.0.1:8080/verify/'
+CallbackURL = 'http://127.0.0.1:8080/order/verify/'
 
 
 def send_request(request):
-    cart = Cart(request)
+    order = Order.objects.get(id=request.session['order_id'])
     description = ''
-    for item in cart:
-        description += str(item['product'].name) + ', '
+    for item in order.items.all():
+        description += item.product.name + ', '
     data = {
         "MerchantID": settings.MERCHANT,
-        "Amount": cart.get_final_price(),
+        "Amount": order.get_final_cost(),
         "Description": description,
         "Phone": request.user.phone,
         "CallbackURL": CallbackURL,
@@ -125,7 +127,6 @@ def send_request(request):
             response_json = response.json()
             authority = response_json['Authority']
             if response_json['Status'] == 100:
-                cart.clear()
                 return redirect(ZP_API_STARTPAY+authority)
             else:
                 return HttpResponse('Error')
@@ -136,11 +137,12 @@ def send_request(request):
         return HttpResponse('Connection Error')
 
 
-def verify(authority):
+def verify(request):
+    order = Order.objects.get(id=request.session['order_id'])
     data = {
         "MerchantID": settings.MERCHANT,
-        # "Amount": amount,
-        "Authority": authority,
+        "Amount": order.get_final_cost(),
+        "Authority": request.GET.get('Authority'),
     }
     data = json.dumps(data)
     # set content length by data
@@ -150,10 +152,16 @@ def verify(authority):
         if response.status_code == 200:
             response_json = response.json()
             reference_id = response_json['RefID']
-            if response['Status'] == 100:
+            if response_json['Status'] == 100:
+                for item in order.items:
+                    item.product.inventory -= item.quantity
+                    item.product.save()
+                order.paid = True
+                order.save()
                 return HttpResponse(f'successful , RefID: {reference_id}')
             else:
                 return HttpResponse('Error')
+        del request.session['order_id']
         return HttpResponse('response failed')
     except requests.exceptions.Timeout:
         return HttpResponse('Timeout Error')
