@@ -158,9 +158,10 @@ def verify(request):
                     item.product.save()
                 order.paid = True
                 order.save()
-                return HttpResponse(f'successful , RefID: {reference_id}')
+                return render(request, 'payment_tracking.html',
+                              {'successful': True, 'RefID': reference_id, 'order_id': order.id})
             else:
-                return HttpResponse('Error')
+                return render(request, 'payment_tracking.html', {'success': False})
         del request.session['order_id']
         return HttpResponse('response failed')
     except requests.exceptions.Timeout:
